@@ -1,20 +1,21 @@
 package fasthttpcors
 
 import (
-	"fmt"
+	"os"
 	"strconv"
 	"strings"
 
 	"github.com/valyala/fasthttp"
 )
 
-type CorsOptions struct {
+type Options struct {
 	AllowedOrigins   []string
 	AllowedHeaders   []string
 	AllowMaxAge      int
 	AllowedMethods   []string
 	ExposedHeaders   []string
 	AllowCredentials bool
+	Debug            bool
 }
 
 type CorsHandler struct {
@@ -26,9 +27,10 @@ type CorsHandler struct {
 	exposedHeaders    []string
 	allowCredentials  bool
 	maxAge            int
+	logger            Logger
 }
 
-var defaultOptions = &CorsOptions{
+var defaultOptions = &Options{
 	AllowedOrigins: []string{"*"},
 	AllowedMethods: []string{"GET", "POST"},
 	AllowedHeaders: []string{"Origin", "Accept", "Content-Type"},
@@ -38,7 +40,7 @@ func DefaultHandler() *CorsHandler {
 	return NewCorsHandler(*defaultOptions)
 }
 
-func NewCorsHandler(options CorsOptions) *CorsHandler {
+func NewCorsHandler(options Options) *CorsHandler {
 	cors := &CorsHandler{
 		allowedOrigins:   options.AllowedOrigins,
 		allowedHeaders:   options.AllowedHeaders,
@@ -46,7 +48,13 @@ func NewCorsHandler(options CorsOptions) *CorsHandler {
 		allowedMethods:   options.AllowedMethods,
 		exposedHeaders:   options.ExposedHeaders,
 		maxAge:           options.AllowMaxAge,
+		logger:           OffLogger(),
 	}
+
+	if options.Debug {
+		cors.logger = NewLogger(os.Stdout)
+	}
+
 	if len(cors.allowedOrigins) == 0 {
 		cors.allowedOrigins = defaultOptions.AllowedOrigins
 		cors.allowedOriginsAll = true
@@ -91,17 +99,20 @@ func (c *CorsHandler) CorsMiddleware(innerHandler fasthttp.RequestHandler) fasth
 func (c *CorsHandler) handlePreflight(ctx *fasthttp.RequestCtx) {
 	originHeader := string(ctx.Request.Header.Peek("Origin"))
 	if len(originHeader) == 0 || c.isAllowedOrigin(originHeader) == false {
-		// fmt.Println("Origin Header is not allwoer", originHeader)
+		c.logger.Log("Origin ", originHeader, " is not in", c.allowedOrigins)
 		return
 	}
 	method := string(ctx.Request.Header.Peek("Access-Control-Request-Method"))
 	if !c.isAllowedMethod(method) {
-		// fmt.Println("Method is not allowed")
+		c.logger.Log("Method ", method, " is not in", c.allowedMethods)
 		return
 	}
-	headers := strings.Split(string(ctx.Request.Header.Peek("Access-Control-Request-Headers")), ",")
+	headers := []string{}
+	if len(ctx.Request.Header.Peek("Access-Control-Request-Headers")) > 0 {
+		headers = strings.Split(string(ctx.Request.Header.Peek("Access-Control-Request-Headers")), ",")
+	}
 	if !c.areHeadersAllowed(headers) {
-		// fmt.Println("Headers is not allowed")
+		c.logger.Log("Headers ", headers, " is not in", c.allowedHeaders)
 		return
 	}
 
@@ -121,6 +132,7 @@ func (c *CorsHandler) handlePreflight(ctx *fasthttp.RequestCtx) {
 func (c *CorsHandler) handleActual(ctx *fasthttp.RequestCtx) {
 	originHeader := string(ctx.Request.Header.Peek("Origin"))
 	if len(originHeader) == 0 || c.isAllowedOrigin(originHeader) == false {
+		c.logger.Log("Origin ", originHeader, " is not in", c.allowedOrigins)
 		return
 	}
 	ctx.Response.Header.Set("Access-Control-Allow-Origin", originHeader)
