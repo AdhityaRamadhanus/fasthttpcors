@@ -1,4 +1,5 @@
 # fasthttpcors
+[![Go Report Card](https://goreportcard.com/badge/github.com/AdhityaRamadhanus/fasthttp)](https://goreportcard.com/report/github.com/AdhityaRamadhanus/fasthttp)
 
 Cors handler for fasthttp server
 
@@ -6,12 +7,10 @@ Cors handler for fasthttp server
   <a href="#ReadFirst">Read First | </a>
   <a href="#Installation">Installation |</a>
   <a href="#Usage">Usage</a> |
-  <a href="#Gowatch">Gowatch</a> |
   <a href="#licenses">License</a>
   <br><br>
   <blockquote>
-	Set of commandline tools to synchronize mongodb documents and elasticsearch index.
-	So you may already have data in mongodb and decided to put them in elasticsearch (You know, for search) or just want to re-sync mongodb with elasticsearch.
+	Handling CORS in fasthttp
   </blockquote>
 </p>
 
