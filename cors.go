@@ -8,6 +8,7 @@ import (
 	"github.com/valyala/fasthttp"
 )
 
+// Options is struct that defined cors properties
 type Options struct {
 	AllowedOrigins   []string
 	AllowedHeaders   []string
