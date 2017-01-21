@@ -24,10 +24,6 @@ Installation
 ------------
 * go get github.com/adhityaramadhanus/fasthttpcors
 
-Gondex
-------------
-* Gondex will index your mongodb collection to elasticsearch based on a mapping you provide
-
 Usage
 ------------
 ```
