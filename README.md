@@ -1,5 +1,5 @@
 # fasthttpcors
-[![Go Report Card](https://goreportcard.com/badge/github.com/AdhityaRamadhanus/fasthttp)](https://goreportcard.com/report/github.com/AdhityaRamadhanus/fasthttp)
+[![Go Report Card](https://goreportcard.com/badge/github.com/AdhityaRamadhanus/fasthttpcors)](https://goreportcard.com/report/github.com/AdhityaRamadhanus/fasthttpcors)
 
 Cors handler for fasthttp server
 
@@ -59,6 +59,10 @@ func RequestHandler(ctx *fasthttp.RequestCtx) {
 }
 
 ```
+
+TODO
+-----
+* add test
 
 License
 ----
